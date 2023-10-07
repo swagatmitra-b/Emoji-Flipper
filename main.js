@@ -2,6 +2,7 @@ import emojis from "./emo";
 
 const gameBox = document.querySelector(".populate");
 const reveal = document.querySelector("#reveal");
+const result = document.querySelector(".result");
 let match = "";
 let matched = [];
 let last;
@@ -20,11 +21,6 @@ const grid = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-let test = [
-  [0, 0],
-  [0, 0],
 ];
 
 function shuffle(arr) {
@@ -61,25 +57,17 @@ onload = () => {
   const backFace = Array.from(document.querySelectorAll(".card-back"));
   const frontFace = document.querySelectorAll(".card-front");
   let shuffled = shuffle([...emojis, ...emojis, ...emojis, ...emojis]);
-  console.log(match);
   for (let i = 0; i < shuffled.length; i++) {
     backFace[i].innerHTML = shuffled[i];
   }
   frontFace.forEach((front) => {
     front.addEventListener("click", (e) => clicker(e));
   });
-  backFace.forEach((back) => {
-    back.addEventListener("click", (e) =>
-      console.log(e.target.getAttribute("id"))
-    );
-  });
 };
 
 function clicker(e) {
-  let id = e.target.getAttribute("id");
   e.target.parentElement.parentElement.classList.add("flip-now");
   e.target.parentElement.classList.add("flip-now");
-  console.log(id);
   if (!timer) dealTimer("start");
   if (!match) {
     match = e.target.nextElementSibling.innerText;
@@ -96,7 +84,6 @@ function clicker(e) {
       setTimeout(() => reflip(current, last), 900);
     }
   }
-  console.log(match, last, matched);
 }
 
 function reflip(first, second) {
@@ -106,23 +93,20 @@ function reflip(first, second) {
   second.parentElement.parentElement.classList.remove("flip-now");
 }
 
-function revealGrid(first, second) {
+function revealGrid() {
   let cards = Array.from(document.querySelectorAll(".card-front"));
-  let set = new Set();
-  console.log(matched);
   cards.forEach((target) => {
-    if (!matched.includes(target.getAttribute("id")) && !set.has(target)) {
+    if (!matched.includes(target.getAttribute("id"))) {
       target.parentElement.parentElement.classList.add("flip-now");
       target.parentElement.classList.add("flip-now");
-      set.add(target);
-    } else console.log(target);
+    }
   });
   setTimeout(() => {
     cards.forEach((target) => {
       if (!matched.includes(target)) {
         target.parentElement.parentElement.classList.remove("flip-now");
         target.parentElement.classList.remove("flip-now");
-      } else console.log(target);
+      }
     });
   }, 2500);
 }
@@ -147,7 +131,8 @@ function clock(now) {
 
   if (matched.length == grid.flat().length) {
     dealTimer("stop");
-    console.log(speed);
+    result.style.display = "block";
+    result.innerHTML = `<h3>You finished in ${speed}</h3>`;
   }
 
   if (minutes == 0) speed = seconds + "." + milliseconds + " seconds";
